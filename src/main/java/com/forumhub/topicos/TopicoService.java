@@ -1,11 +1,13 @@
 package com.forumhub.topicos;
+import com.forumhub.cursos.Curso;
+import com.forumhub.cursos.CursoRepository;
 
-import com.forumhub.usuario.Usuario;
-import com.forumhub.usuario.UsuarioRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+
 
 @Service
 public class TopicoService {
@@ -14,16 +16,22 @@ public class TopicoService {
     private TopicosRepository topicosRepository;
 
     @Autowired
-    private UsuarioRepository usuarioRepository;
+    private CursoRepository cursoRepository;
 
-    public void cadastrar(DadosCadastroTopico dados) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-        Usuario usuario = usuarioRepository.findByNome(username)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+    public Topico cadastrar(DadosCadastroTopico dados) {
+        System.out.println("Dados recebidos: " + dados); // Imprima o objeto dados completo
+        Curso curso = cursoRepository.findById(dados.cursoId())
+                .orElseThrow(() -> new EntityNotFoundException("Curso não encontrado com o ID: " + dados.cursoId()));
 
-        Topico topico = new Topico(dados);
-        topico.setUsuario(usuario); // ASSOCIA O USUÁRIO AQUI!!!
-        topicosRepository.save(topico);
+        Topico topico = new Topico();
+        topico.setTitulo(dados.titulo()); // Chamadas aos setters manuais
+        topico.setMensagem(dados.mensagem());
+        topico.setCurso(curso);        // Chamadas aos setters manuais
+        topico.setNomeAutor(dados.nomeAutor());// Chamadas aos setters manuais
+        return topicosRepository.save(topico);
+    }
+
+    public List<Topico> listar() {
+        return topicosRepository.findAll();
     }
 }

@@ -1,36 +1,73 @@
 package com.forumhub.topicos;
-import com.forumhub.usuario.Usuario;
+import com.forumhub.cursos.Curso;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.NotBlank;
+import lombok.*;
 
+import java.time.LocalDateTime;
+
+
+@Entity
 @Table(name = "topicos")
-@Entity(name= "Topico")
-@Getter
-@NoArgsConstructor
-@AllArgsConstructor
-@EqualsAndHashCode(of= "id")
 public class Topico {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String titulo;
     private String mensagem;
-    private String curso;
+    @ManyToOne
+    @JoinColumn(name = "curso_id")
+    private Curso curso;
+    private LocalDateTime dataCriacao = LocalDateTime.now();
+    private String nomeAutor;
 
-    @ManyToOne // Mapeamento da relação com Usuario
-    @JoinColumn(name = "usuario_id") // Nome da coluna de chave estrangeira no banco
-    private Usuario usuario;
 
-
-    public Topico(DadosCadastroTopico dados) {
-        this.titulo = dados.titulo();
-        this.mensagem = dados.mensagem();
-        this.curso = dados.curso();
-
+    public Topico() {
+        // Construtor sem argumentos (obrigatório para JPA)
     }
+
+    public void setMensagem(String mensagem) {
+        this.mensagem = mensagem;
+    }
+
+    public void setCurso(Curso curso) {
+        this.curso = curso;
+    }
+
+    public void setNomeAutor(String nomeAutor) {
+        this.nomeAutor = nomeAutor;
+    }
+
+    public void setTitulo(String titulo) {
+        this.titulo = titulo;
+    }
+
+
+    //Getters manuais (precisa adicionar tambem)
+    public String getTitulo() {
+        return titulo;
+    }
+
+    public String getMensagem() {
+        return mensagem;
+    }
+
+    public Curso getCurso() {
+        return curso;
+    }
+
+    public String getNomeAutor() {
+        return nomeAutor;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public LocalDateTime getDataCriacao() {
+        return dataCriacao;
+    }
+
 
 }
